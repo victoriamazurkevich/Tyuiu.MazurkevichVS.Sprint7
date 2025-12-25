@@ -33,7 +33,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         static int rowsProviders = 0;
         static int columnsProviders = 0;
 
-        private Dictionary<string, bool> sortDirections = new Dictionary<string, bool>(); // true = по возрастанию, false = по убыванию
+        private Dictionary<string, bool> sortDirections = new Dictionary<string, bool>(); 
         private string lastSortedColumn = "";
 
         private void FormMain_Load(object sender, EventArgs e)

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormHelpUser));
             tableLayoutPanel1 = new TableLayoutPanel();
             textBoxGuide_MVS = new TextBox();
             tableLayoutPanel1.SuspendLayout();
@@ -50,13 +51,13 @@
             // 
             textBoxGuide_MVS.BorderStyle = BorderStyle.None;
             textBoxGuide_MVS.Dock = DockStyle.Fill;
-            textBoxGuide_MVS.Font = new Font("Segoe UI", 14F);
+            textBoxGuide_MVS.Font = new Font("Segoe UI", 13F);
             textBoxGuide_MVS.Location = new Point(3, 3);
             textBoxGuide_MVS.Multiline = true;
             textBoxGuide_MVS.Name = "textBoxGuide_MVS";
             textBoxGuide_MVS.Size = new Size(794, 444);
             textBoxGuide_MVS.TabIndex = 0;
-            textBoxGuide_MVS.Text = "О программе:\r\nОткрыть - открывает выбранный файл\r\nСохранить - сохраняет файл\r\nГрафик-Построить - строит график филлиалов\r\nСортировка -\r\nФильтрация -\r\n";
+            textBoxGuide_MVS.Text = resources.GetString("textBoxGuide_MVS.Text");
             // 
             // FormHelpUser
             // 
