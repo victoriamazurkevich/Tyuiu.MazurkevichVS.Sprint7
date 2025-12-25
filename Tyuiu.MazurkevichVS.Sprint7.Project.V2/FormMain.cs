@@ -27,19 +27,11 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         static string openFilePath;
         static int rowsDepartmens = 0;
         static int columnsDepartmens = 0;
-        static int columnsSearchDepartments = 0;
 
         static int rowsEmployees = 0;
         static int columnsEmployees = 0;
         static int rowsProviders = 0;
         static int columnsProviders = 0;
-
-        private string currentSearchTable = "";
-        private string currentSearchColumn = "";
-        private string currentSearchQuery = "";
-        private List<DataGridViewRow> originalRowsDepartments = new List<DataGridViewRow>();
-        private List<DataGridViewRow> originalRowsEmployees = new List<DataGridViewRow>();
-        private List<DataGridViewRow> originalRowsProviders = new List<DataGridViewRow>();
 
         private Dictionary<string, bool> sortDirections = new Dictionary<string, bool>(); // true = по возрастанию, false = по убыванию
         private string lastSortedColumn = "";
