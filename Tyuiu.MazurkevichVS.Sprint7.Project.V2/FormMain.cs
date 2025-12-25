@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.DirectoryServices;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,8 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             InitializeComponent();
             openFileDialog_MVS.Filter = "Значения, разделённые запятыми (*.csv)|*.csv|Все файлы(*.*)|*.*";
             saveFileDialog_MVS.Filter = "Значения, разделённые запятыми (*.csv)|*.csv|Все файлы(*.*)|*.*";
-            InitializeSearchSimple();
+            InitializeSearchSimple(); 
+            AttachColumnHeaderClickHandlers();
         }
 
         DataService ds = new DataService();
@@ -39,6 +41,9 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         private List<DataGridViewRow> originalRowsEmployees = new List<DataGridViewRow>();
         private List<DataGridViewRow> originalRowsProviders = new List<DataGridViewRow>();
 
+        private Dictionary<string, bool> sortDirections = new Dictionary<string, bool>(); // true = по возрастанию, false = по убыванию
+        private string lastSortedColumn = "";
+
         private void FormMain_Load(object sender, EventArgs e)
         {
 
@@ -49,12 +54,14 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
 
         }
 
+        // кнопка формы с графиком
         private void buttontoChart_MVS_Click(object sender, EventArgs e)
         {
             FormChart form = new FormChart();
             form.ShowDialog();
         }
 
+        // кнопка краткого руководства пользователя
         private void buttonHelp_MVS_Click(Object sender, EventArgs e)
         {
             FormHelpUser form = new FormHelpUser();
@@ -65,6 +72,8 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         {
 
         }
+
+        // кнопка загрузки для таблицы поставщиков
         private void buttonLoadProviders_MVS_Click(object sender, EventArgs e)
         {
             openFileDialog_MVS.ShowDialog();
@@ -132,6 +141,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             UpdateSearchColumnsSimple();
         }
 
+        // кнопка загрузки для таблицы сотрудников
         private void buttonLoadEmployees_MVS_Click(object sender, EventArgs e)
         {
             openFileDialog_MVS.ShowDialog();
@@ -199,6 +209,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             UpdateSearchColumnsSimple();
         }
 
+        // кнопка загрузки для таблицы филиалов
         private void buttonLoadFileDepartments_MVS_Click(Object sender, EventArgs e)
         {
             openFileDialog_MVS.ShowDialog();
@@ -263,6 +274,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             }
         }
 
+        // кнопка сохранения для таблицы филиалов
         private void buttonSaveDepartments_MVS_Click(object sender, EventArgs e)
         {
             saveFileDialog_MVS.FileName = "NewDepartments.csv";
@@ -297,6 +309,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             str = "";
         }
 
+        // кнопка сохранения для таблицы сотрудников
         private void buttonSaveEmployees_MVS_Click(object sender, EventArgs e)
         {
             saveFileDialog_MVS.FileName = "NewEmployees.csv";
@@ -331,6 +344,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             str = "";
         }
 
+        // кнопка сохранения для таблицы поставщиков
         private void buttonSaveProviders_MVS_Click(object sender, EventArgs e)
         {
             saveFileDialog_MVS.FileName = "NewProviders.csv";
@@ -365,6 +379,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             str = "";
         }
 
+        // кнопка минимума для таблицы сотрудников
         private void buttonMinEmployees_MVS_Click(object sender, EventArgs e)
         {
             int minimum = 123456789;
@@ -378,6 +393,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             textBoxMinEmployees_MVS.Text = minimum.ToString();
         }
 
+        // кнопка максимума для таблицы сотрудников
         private void buttonMaxEmployees_MVS_Click(object sender, EventArgs e)
         {
             int maximum = 0;
@@ -391,6 +407,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             textBoxMaxEmployees_MVS.Text = maximum.ToString();
         }
 
+        // кнопка максимума для таблицы поставщиков
         private void buttonMaxProviders_MVS_Click(object sender, EventArgs e)
         {
             int maximum = 0;
@@ -404,6 +421,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             textBoxMaxProviders_MVS.Text = maximum.ToString();
         }
 
+        // кнопка минимума для таблицы поставщиков
         private void buttonMinProviders_MVS_Click(object sender, EventArgs e)
         {
             int minimum = 123456789;
@@ -417,16 +435,61 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             textBoxMinProviders_MVS.Text = minimum.ToString();
         }
 
+        // кнопка среднего значения для таблицы сотрудников
+        private void buttonMidEmployees_MVS_Click(object sender, EventArgs e)
+            {
+            double sum = 0;
+            int count = 0;
+
+            foreach (DataGridViewRow row in dataGridViewEmployees_MVS.Rows)
+            {
+                if (row.IsNewRow || !row.Visible) continue;
+
+                if (double.TryParse(
+                    row.Cells[4].Value?.ToString(),
+                    out double value))
+                {
+                    sum += value;
+                    count++;
+                }
+            }
+
+            textBoxMidEmployees_MVS.Text = count > 0 ? Math.Round(sum / count, 2).ToString() : "Нет данных";
+        }
+
+        // кнопка среднего значения для таблицы поставщиков
+        private void buttonMidProviders_MVS_Click(object sender, EventArgs e)
+        {
+            double sum = 0;
+            int count = 0;
+
+            foreach (DataGridViewRow row in dataGridViewProviders_MVS.Rows)
+            {
+                if (row.IsNewRow || !row.Visible) continue;
+
+                if (double.TryParse(
+                    row.Cells[4].Value?.ToString(),
+                    out double value))
+                {
+                    sum += value;
+                    count++;
+                }
+            }
+
+            textBoxMidProviders_MVS.Text = count > 0 ? Math.Round(sum / count, 2).ToString() : "Нет данных";
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
 
         }
 
+        // поиск
         private void InitializeSearchSimple()
         {
             try
             {
-                // Настройка ComboBox для выбора таблицы
+               
                 if (comboBoxSearchTable_MVS != null)
                 {
                     comboBoxSearchTable_MVS.Items.Clear();
@@ -435,17 +498,17 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                     comboBoxSearchTable_MVS.Items.Add("Поставщики");
                     comboBoxSearchTable_MVS.SelectedIndex = 0;
 
-                    // Добавляем обработчик изменения
+                    
                     comboBoxSearchTable_MVS.SelectedIndexChanged += (s, e) => UpdateSearchColumnsSimple();
                 }
 
-                // Настройка кнопки поиска
+                
                 if (buttonSearch_MVS != null)
                 {
                     buttonSearch_MVS.Click += (s, e) => SearchSimple();
                 }
 
-                // Настройка TextBox для поиска по Enter
+                
                 if (textBoxSearch_MVS != null)
                 {
                     textBoxSearch_MVS.KeyPress += (s, e) =>
@@ -458,7 +521,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                     };
                 }
 
-                // Инициализация ComboBox для столбцов
+                
                 UpdateSearchColumnsSimple();
             }
             catch (Exception ex)
@@ -468,7 +531,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             }
         }
 
-        // ОБНОВЛЕНИЕ СТОЛБЦОВ ДЛЯ ПОИСКА (ПРОСТОЙ ВАРИАНТ)
+        
         private void UpdateSearchColumnsSimple()
         {
             if (comboBoxSearchColumn_MVS == null || comboBoxSearchTable_MVS == null) return;
@@ -479,7 +542,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
 
             switch (tableIndex)
             {
-                case 0: // Филиалы
+                case 0: // филиалы
                     comboBoxSearchColumn_MVS.Items.Add("Все столбцы");
                     comboBoxSearchColumn_MVS.Items.Add("Город");
                     comboBoxSearchColumn_MVS.Items.Add("Адрес");
@@ -487,7 +550,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                     comboBoxSearchColumn_MVS.Items.Add("Год открытия филиала");
                     break;
 
-                case 1: // Сотрудники
+                case 1: // сотрудники
                     comboBoxSearchColumn_MVS.Items.Add("Все столбцы");
                     comboBoxSearchColumn_MVS.Items.Add("Фамилия");
                     comboBoxSearchColumn_MVS.Items.Add("И.О.");
@@ -496,7 +559,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                     comboBoxSearchColumn_MVS.Items.Add("Капитал");
                     break;
 
-                case 2: // Поставщики
+                case 2: // поставщики
                     comboBoxSearchColumn_MVS.Items.Add("Все столбцы");
                     comboBoxSearchColumn_MVS.Items.Add("Фамилия");
                     comboBoxSearchColumn_MVS.Items.Add("И.О.");
@@ -510,12 +573,11 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 comboBoxSearchColumn_MVS.SelectedIndex = 0;
         }
 
-        // ПРОСТОЙ МЕТОД ПОИСКА
         private void SearchSimple()
         {
             try
             {
-                // Проверяем, что все элементы есть
+                
                 if (comboBoxSearchTable_MVS == null || comboBoxSearchColumn_MVS == null || textBoxSearch_MVS == null)
                 {
                     MessageBox.Show("Элементы поиска не найдены", "Ошибка",
@@ -532,32 +594,32 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                     return;
                 }
 
-                // Определяем, в какой таблице искать
+                
                 int tableIndex = comboBoxSearchTable_MVS.SelectedIndex;
                 int columnIndex = comboBoxSearchColumn_MVS.SelectedIndex;
                 string columnName = comboBoxSearchColumn_MVS.SelectedItem?.ToString() ?? "";
 
-                
 
-                // Выполняем поиск
+
+                
                 int foundCount = 0;
 
                 switch (tableIndex)
                 {
-                    case 0: // Филиалы
+                    case 0: // филиалы
                         foundCount = SearchInDataGridView(dataGridViewDepartments_MVS, searchText, columnName);
                         break;
 
-                    case 1: // Сотрудники
+                    case 1: // сотрудники
                         foundCount = SearchInDataGridView(dataGridViewEmployees_MVS, searchText, columnName);
                         break;
 
-                    case 2: // Поставщики
+                    case 2: // поставщики
                         foundCount = SearchInDataGridView(dataGridViewProviders_MVS, searchText, columnName);
                         break;
                 }
 
-                // Показываем результат
+                
                 if (foundCount > 0)
                 {
                     MessageBox.Show($"Найдено {foundCount} совпадений", "Результат поиска",
@@ -576,7 +638,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             }
         }
 
-        // ИСПРАВЛЕННЫЙ МЕТОД ПОИСКА В DATAGRIDVIEW
+       
         private int SearchInDataGridView(DataGridView dataGridView, string searchText, string columnName)
         {
             if (dataGridView == null)
@@ -595,10 +657,10 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
 
             int foundCount = 0;
 
-            // Сначала сбрасываем все подсветки в этой таблице
+            
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                // Проверяем, что строка не null
+                
                 if (row == null) continue;
 
                 for (int i = 0; i < row.Cells.Count; i++)
@@ -611,15 +673,15 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 }
             }
 
-            // Выполняем поиск и подсветку
+            
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                // Пропускаем пустые строки и строки null
+               
                 if (row == null || row.IsNewRow) continue;
-
+                // поиск по всем столбцам
                 if (columnName == "Все столбцы")
                 {
-                    // Поиск по всем столбцам
+                   
                     for (int i = 0; i < row.Cells.Count; i++)
                     {
                         var cell = row.Cells[i];
@@ -632,15 +694,14 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                                 cell.Style.BackColor = Color.Yellow;
                                 cell.Style.ForeColor = Color.Black;
                                 foundCount++;
-                                
+
                             }
                         }
                     }
                 }
                 else
                 {
-                    // Поиск по конкретному столбцу
-                    // Преобразуем имя столбца в индекс
+                    // поиск по конкретному столбцу
                     int columnIndex = GetActualColumnIndex(dataGridView, columnName);
 
                     if (columnIndex >= 0 && columnIndex < row.Cells.Count)
@@ -655,7 +716,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                                 cell.Style.BackColor = Color.Yellow;
                                 cell.Style.ForeColor = Color.Black;
                                 foundCount++;
-                                
+
                             }
                         }
                     }
@@ -670,43 +731,43 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             return foundCount;
         }
 
-        // НОВЫЙ МЕТОД ДЛЯ ПОЛУЧЕНИЯ ПРАВИЛЬНОГО ИНДЕКСА СТОЛБЦА
+        // метод для правильного индекса столбца
         private int GetActualColumnIndex(DataGridView dataGridView, string columnDisplayName)
         {
             if (dataGridView == null) return -1;
 
-            // Преобразуем отображаемое имя в индекс столбца
+           
             Dictionary<string, int> columnMapping = new Dictionary<string, int>();
 
-            // Сопоставляем отображаемые имена с индексами
+           
             switch (columnDisplayName)
             {
                 case "Город":
-                    return 1; // Второй столбец (индекс 1)
+                    return 1; 
 
                 case "Адрес":
-                    return 2; // Третий столбец (индекс 2)
+                    return 2; 
 
                 case "Телефон":
-                    return 3; // Четвертый столбец (индекс 3)
+                    return 3; 
 
                 case "Год открытия":
-                    return 4; // Пятый столбец (индекс 4)
+                    return 4; 
 
                 case "Фамилия":
-                    return 1; // Для сотрудников и поставщиков
+                    return 1; 
 
                 case "И.О.":
                     return 2;
 
                 case "Капитал":
-                    return 5; // Для сотрудников
+                    return 5; 
 
                 case "Стоимость поставки":
-                    return 5; // Для поставщиков
+                    return 5; 
 
                 default:
-                    // Пытаемся найти по заголовку столбца
+                    
                     for (int i = 0; i < dataGridView.Columns.Count; i++)
                     {
                         if (dataGridView.Columns[i].HeaderText == columnDisplayName)
@@ -716,9 +777,231 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             }
         }
 
+        // сортировка внутри таблиц
+        private string GetTableName(DataGridView dataGridView)
+        {
+            if (dataGridView == dataGridViewDepartments_MVS) return "Филиалы";
+            if (dataGridView == dataGridViewEmployees_MVS) return "Сотрудники";
+            if (dataGridView == dataGridViewProviders_MVS) return "Поставщики";
+            return "Неизвестная таблица";
+        }
+
+        
+        private void UpdateColumnHeader(DataGridView dataGridView, int columnIndex, bool ascending)
+        {
+            if (dataGridView == null || columnIndex < 0 || columnIndex >= dataGridView.Columns.Count) return;
+
+            try
+            {
+                
+                foreach (DataGridViewColumn column in dataGridView.Columns)
+                {
+                    string headerText = column.HeaderText;
+                    
+                    if (headerText.EndsWith(" ▲") || headerText.EndsWith(" ▼"))
+                    {
+                        column.HeaderText = headerText.Substring(0, headerText.Length - 2);
+                    }
+                }
+
+                
+                string currentHeader = dataGridView.Columns[columnIndex].HeaderText;
+                
+                if (currentHeader.EndsWith(" ▲") || currentHeader.EndsWith(" ▼"))
+                {
+                    currentHeader = currentHeader.Substring(0, currentHeader.Length - 2);
+                }
+
+                dataGridView.Columns[columnIndex].HeaderText = $"{currentHeader} {(ascending ? "▲" : "▼")}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка обновления заголовка: {ex.Message}");
+            }
+        }
+
+        private void dataGridViewDepartments_MVS_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                SortOnColumnClick(dataGridViewDepartments_MVS, e.ColumnIndex);
+            }
+        }
+
+        private void dataGridViewEmployees_MVS_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                SortOnColumnClick(dataGridViewEmployees_MVS, e.ColumnIndex);
+            }
+        }
+
+        private void dataGridViewProviders_MVS_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                SortOnColumnClick(dataGridViewProviders_MVS, e.ColumnIndex);
+            }
+        }
+
+        
+        private void SortOnColumnClick(DataGridView dataGridView, int columnIndex)
+        {
+            try
+            {
+                if (dataGridView == null || dataGridView.Rows.Count <= 1)
+                {
+                    MessageBox.Show("Нет данных для сортировки", "Внимание",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+               
+                if (columnIndex == 0)
+                {
+                    MessageBox.Show("Сортировка по номеру недоступна", "Информация",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                string columnName = dataGridView.Columns[columnIndex].HeaderText;
+                string tableName = GetTableName(dataGridView);
+                string sortKey = $"{tableName}_{columnName}";
+
+                
+                bool ascending = true;
+                if (lastSortedColumn == sortKey && sortDirections.ContainsKey(sortKey))
+                {
+                    ascending = !sortDirections[sortKey];
+                }
+
+                sortDirections[sortKey] = ascending;
+                lastSortedColumn = sortKey;
+
+                
+                DataTable dt = new DataTable();
+
+                
+                foreach (DataGridViewColumn column in dataGridView.Columns)
+                {
+                    dt.Columns.Add(column.HeaderText, typeof(string));
+                }
+
+                
+                int rowsToAdd = dataGridView.AllowUserToAddRows ? dataGridView.Rows.Count - 1 : dataGridView.Rows.Count;
+
+                for (int i = 0; i < rowsToAdd; i++)
+                {
+                    DataRow dr = dt.NewRow();
+                    for (int j = 0; j < dataGridView.Columns.Count; j++)
+                    {
+                        dr[j] = dataGridView.Rows[i].Cells[j].Value ?? "";
+                    }
+                    dt.Rows.Add(dr);
+                }
+
+                // сортировка
+                DataView dv = dt.DefaultView;
+
+                
+                if (columnName == "Капитал" || columnName == "Стоимость поставки" || columnName == "Год открытия филиала")
+                {
+                    
+                    dt.Columns.Add("TempSort", typeof(int));
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        string value = dt.Rows[i][columnIndex].ToString();
+                        if (int.TryParse(value, out int numValue))
+                        {
+                            dt.Rows[i]["TempSort"] = numValue;
+                        }
+                        else
+                        {
+                            dt.Rows[i]["TempSort"] = 0;
+                        }
+                    }
+                    dv.Sort = $"TempSort {(ascending ? "ASC" : "DESC")}";
+                }
+                else
+                {
+                    dv.Sort = $"[{columnName}] {(ascending ? "ASC" : "DESC")}";
+                }
+
+                
+                dataGridView.Rows.Clear();
+
+                for (int i = 0; i < dv.Count; i++)
+                {
+                    int rowIndex = dataGridView.Rows.Add();
+                    for (int j = 0; j < dataGridView.Columns.Count; j++)
+                    {
+                        dataGridView.Rows[rowIndex].Cells[j].Value = dv[i][j];
+                    }
+                }
+
+                
+                if (dataGridView.AllowUserToAddRows)
+                {
+                    dataGridView.Rows.Add();
+                }
+
+                
+                UpdateColumnHeader(dataGridView, columnIndex, ascending);
+
+                
+                if (dataGridView.Rows.Count > 0)
+                {
+                    dataGridView.FirstDisplayedScrollingRowIndex = 0;
+                }
+
+                
+                string direction = ascending ? "по возрастанию" : "по убыванию";
+                MessageBox.Show($"Таблица '{tableName}' отсортирована по столбцу '{columnName}' {direction}",
+                              "Сортировка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка сортировки: {ex.Message}", "Ошибка",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
 
+        // привязка обработчиков
+        private void AttachColumnHeaderClickHandlers()
+        {
+            try
+            {
+                if (dataGridViewDepartments_MVS != null)
+                {
+                    dataGridViewDepartments_MVS.ColumnHeaderMouseClick -= dataGridViewDepartments_MVS_ColumnHeaderMouseClick;
+                    dataGridViewDepartments_MVS.ColumnHeaderMouseClick += dataGridViewDepartments_MVS_ColumnHeaderMouseClick;
+                }
 
+                if (dataGridViewEmployees_MVS != null)
+                {
+                    dataGridViewEmployees_MVS.ColumnHeaderMouseClick -= dataGridViewEmployees_MVS_ColumnHeaderMouseClick;
+                    dataGridViewEmployees_MVS.ColumnHeaderMouseClick += dataGridViewEmployees_MVS_ColumnHeaderMouseClick;
+                }
+
+                if (dataGridViewProviders_MVS != null)
+                {
+                    dataGridViewProviders_MVS.ColumnHeaderMouseClick -= dataGridViewProviders_MVS_ColumnHeaderMouseClick;
+                    dataGridViewProviders_MVS.ColumnHeaderMouseClick += dataGridViewProviders_MVS_ColumnHeaderMouseClick;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка привязки обработчиков сортировки: {ex.Message}", "Ошибка",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void tableLayoutPanelMainCenter_MVS_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 
 }
