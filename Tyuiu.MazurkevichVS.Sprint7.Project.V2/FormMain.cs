@@ -672,7 +672,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         // метод для правильного индекса столбца
         private int GetActualColumnIndex(DataGridView dataGridView, string columnDisplayName)
         {
-            
+
             for (int i = 0; i < dataGridView.Columns.Count; i++)
             {
                 if (dataGridView.Columns[i].HeaderText == columnDisplayName)
@@ -690,7 +690,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             return "Неизвестная таблица";
         }
 
-        
+
         private void UpdateColumnHeader(DataGridView dataGridView, int columnIndex, bool ascending)
         {
             if (dataGridView == null || columnIndex < 0 || columnIndex >= dataGridView.Columns.Count) return;
