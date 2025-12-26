@@ -548,32 +548,13 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         private void SearchSimple()
         {
             try
-            {
-                
-                if (comboBoxSearchTable_MVS == null || comboBoxSearchColumn_MVS == null || textBoxSearch_MVS == null)
-                {
-                    MessageBox.Show("Элементы поиска не найдены", "Ошибка",
-                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
+            { 
                 string searchText = textBoxSearch_MVS.Text.Trim();
 
-                if (string.IsNullOrEmpty(searchText))
-                {
-                    MessageBox.Show("Введите текст для поиска", "Внимание",
-                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                
                 int tableIndex = comboBoxSearchTable_MVS.SelectedIndex;
                 int columnIndex = comboBoxSearchColumn_MVS.SelectedIndex;
                 string columnName = comboBoxSearchColumn_MVS.SelectedItem?.ToString() ?? "";
 
-
-
-                
                 int foundCount = 0;
 
                 switch (tableIndex)
@@ -613,23 +594,8 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
        
         private int SearchInDataGridView(DataGridView dataGridView, string searchText, string columnName)
         {
-            if (dataGridView == null)
-            {
-                MessageBox.Show("Таблица не найдена", "Ошибка",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return 0;
-            }
-
-            if (dataGridView.Rows.Count == 0)
-            {
-                MessageBox.Show("Таблица пуста", "Внимание",
-                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return 0;
-            }
-
             int foundCount = 0;
 
-            
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
                 
@@ -763,9 +729,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         {
             if (dataGridView == null || columnIndex < 0 || columnIndex >= dataGridView.Columns.Count) return;
 
-            try
-            {
-                
+            
                 foreach (DataGridViewColumn column in dataGridView.Columns)
                 {
                     string headerText = column.HeaderText;
@@ -785,11 +749,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 }
 
                 dataGridView.Columns[columnIndex].HeaderText = $"{currentHeader} {(ascending ? "▲" : "▼")}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка обновления заголовка: {ex.Message}");
-            }
+            
         }
 
         private void dataGridViewDepartments_MVS_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -821,26 +781,10 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         {
             try
             {
-                if (dataGridView == null || dataGridView.Rows.Count <= 1)
-                {
-                    MessageBox.Show("Нет данных для сортировки", "Внимание",
-                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-               
-                if (columnIndex == 0)
-                {
-                    MessageBox.Show("Сортировка по номеру недоступна", "Информация",
-                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
                 string columnName = dataGridView.Columns[columnIndex].HeaderText;
                 string tableName = GetTableName(dataGridView);
                 string sortKey = $"{tableName}_{columnName}";
 
-                
                 bool ascending = true;
                 if (lastSortedColumn == sortKey && sortDirections.ContainsKey(sortKey))
                 {
@@ -943,8 +887,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         // привязка обработчиков
         private void AttachColumnHeaderClickHandlers()
         {
-            try
-            {
+            
                 if (dataGridViewDepartments_MVS != null)
                 {
                     dataGridViewDepartments_MVS.ColumnHeaderMouseClick -= dataGridViewDepartments_MVS_ColumnHeaderMouseClick;
@@ -962,12 +905,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                     dataGridViewProviders_MVS.ColumnHeaderMouseClick -= dataGridViewProviders_MVS_ColumnHeaderMouseClick;
                     dataGridViewProviders_MVS.ColumnHeaderMouseClick += dataGridViewProviders_MVS_ColumnHeaderMouseClick;
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка привязки обработчиков сортировки: {ex.Message}", "Ошибка",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+           
         }
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
