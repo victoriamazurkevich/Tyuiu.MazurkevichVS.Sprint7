@@ -36,16 +36,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         private Dictionary<string, bool> sortDirections = new Dictionary<string, bool>(); 
         private string lastSortedColumn = "";
 
-        private void FormMain_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
+        
         // кнопка формы с графиком
         private void buttontoChart_MVS_Click(object sender, EventArgs e)
         {
@@ -58,11 +49,6 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         {
             FormHelpUser form = new FormHelpUser();
             form.ShowDialog();
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
 
         // кнопка загрузки для таблицы поставщиков
@@ -438,7 +424,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 if (row.IsNewRow || !row.Visible) continue;
 
                 if (double.TryParse(
-                    row.Cells[4].Value?.ToString(),
+                    row.Cells[5].Value?.ToString(),
                     out double value))
                 {
                     sum += value;
@@ -460,7 +446,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 if (row.IsNewRow || !row.Visible) continue;
 
                 if (double.TryParse(
-                    row.Cells[4].Value?.ToString(),
+                    row.Cells[5].Value?.ToString(),
                     out double value))
                 {
                     sum += value;
@@ -469,11 +455,6 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             }
 
             textBoxMidProviders_MVS.Text = count > 0 ? Math.Round(sum / count, 2).ToString() : "Нет данных";
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
         }
 
         // поиск
@@ -523,7 +504,6 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             }
         }
 
-        
         private void UpdateSearchColumnsSimple()
         {
             if (comboBoxSearchColumn_MVS == null || comboBoxSearchTable_MVS == null) return;
@@ -989,7 +969,10 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                               MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
 
+        }
         private void tableLayoutPanelMainCenter_MVS_Paint(object sender, PaintEventArgs e)
         {
 
