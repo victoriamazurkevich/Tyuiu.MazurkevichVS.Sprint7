@@ -525,7 +525,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 case 1: // сотрудники
                     comboBoxSearchColumn_MVS.Items.Add("Все столбцы");
                     comboBoxSearchColumn_MVS.Items.Add("Фамилия");
-                    comboBoxSearchColumn_MVS.Items.Add("И.О.");
+                    comboBoxSearchColumn_MVS.Items.Add("И. О.");
                     comboBoxSearchColumn_MVS.Items.Add("Адрес");
                     comboBoxSearchColumn_MVS.Items.Add("Телефон");
                     comboBoxSearchColumn_MVS.Items.Add("Капитал");
@@ -534,7 +534,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 case 2: // поставщики
                     comboBoxSearchColumn_MVS.Items.Add("Все столбцы");
                     comboBoxSearchColumn_MVS.Items.Add("Фамилия");
-                    comboBoxSearchColumn_MVS.Items.Add("И.О.");
+                    comboBoxSearchColumn_MVS.Items.Add("И. О.");
                     comboBoxSearchColumn_MVS.Items.Add("Адрес");
                     comboBoxSearchColumn_MVS.Items.Add("Телефон");
                     comboBoxSearchColumn_MVS.Items.Add("Стоимость поставки");
@@ -672,47 +672,13 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         // метод для правильного индекса столбца
         private int GetActualColumnIndex(DataGridView dataGridView, string columnDisplayName)
         {
-            if (dataGridView == null) return -1;
-
-           
-            Dictionary<string, int> columnMapping = new Dictionary<string, int>();
-
-           
-            switch (columnDisplayName)
+            
+            for (int i = 0; i < dataGridView.Columns.Count; i++)
             {
-                case "Город":
-                    return 1; 
-
-                case "Адрес":
-                    return 2; 
-
-                case "Телефон":
-                    return 3; 
-
-                case "Год открытия":
-                    return 4; 
-
-                case "Фамилия":
-                    return 1; 
-
-                case "И.О.":
-                    return 2;
-
-                case "Капитал":
-                    return 5; 
-
-                case "Стоимость поставки":
-                    return 5; 
-
-                default:
-                    
-                    for (int i = 0; i < dataGridView.Columns.Count; i++)
-                    {
-                        if (dataGridView.Columns[i].HeaderText == columnDisplayName)
-                            return i;
-                    }
-                    return -1;
+                if (dataGridView.Columns[i].HeaderText == columnDisplayName)
+                    return i;
             }
+            return -1;
         }
 
         // сортировка внутри таблиц
