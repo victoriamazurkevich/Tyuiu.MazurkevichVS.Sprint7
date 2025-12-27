@@ -681,7 +681,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             return -1;
         }
 
-        // сортировка внутри таблиц
+        //названия таблиц для сортировки
         private string GetTableName(DataGridView dataGridView)
         {
             if (dataGridView == dataGridViewDepartments_MVS) return "Филиалы";
@@ -690,7 +690,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
             return "Неизвестная таблица";
         }
 
-
+        //значки возрастания и убывания в заголовках
         private void UpdateColumnHeader(DataGridView dataGridView, int columnIndex, bool ascending)
         {
             if (dataGridView == null || columnIndex < 0 || columnIndex >= dataGridView.Columns.Count) return;
@@ -747,6 +747,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
         {
             try
             {
+                //сортировка слов
                 string columnName = dataGridView.Columns[columnIndex].HeaderText;
                 string tableName = GetTableName(dataGridView);
                 string sortKey = $"{tableName}_{columnName}";
@@ -760,7 +761,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 sortDirections[sortKey] = ascending;
                 lastSortedColumn = sortKey;
 
-                
+                //вид для работы
                 DataTable dt = new DataTable();
 
                 
@@ -772,6 +773,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                 
                 int rowsToAdd = dataGridView.AllowUserToAddRows ? dataGridView.Rows.Count - 1 : dataGridView.Rows.Count;
 
+                //копирование в DataTable
                 for (int i = 0; i < rowsToAdd; i++)
                 {
                     DataRow dr = dt.NewRow();
@@ -782,10 +784,10 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
                     dt.Rows.Add(dr);
                 }
 
-                // сортировка
+                //вид для сортировки
                 DataView dv = dt.DefaultView;
 
-                
+                //сортировка чисел
                 if (columnName == "Капитал" || columnName == "Стоимость поставки" || columnName == "Год открытия филиала")
                 {
                     
@@ -811,7 +813,7 @@ namespace Tyuiu.MazurkevichVS.Sprint7.Project.V2
 
                 
                 dataGridView.Rows.Clear();
-
+                // заполнение отсортированными данными
                 for (int i = 0; i < dv.Count; i++)
                 {
                     int rowIndex = dataGridView.Rows.Add();
